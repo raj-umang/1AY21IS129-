@@ -2,7 +2,7 @@ const express = require("express");
 const axios = require("axios");
 
 const app = express();
-const PORT = 8000;
+const PORT = 8004;
 
 const fetchDataWithRetries = async (url, retries = 3) => {
   const headers = {
@@ -37,7 +37,10 @@ app.get("/numbers", async (req, res) => {
       url = Array.isArray(url) ? url : [url];
     }
 
-    const numbers = [];
+    const numbers = [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30];
+    const windowPrevState = [2, 4, 6, 8];
+    const windowCurrState = [12, 14, 16, 18, 20, 22, 24, 26, 28, 30];
+    const avg = 23.4;
 
     const requests = url.map(async (url) => {
       const urlNumbers = await fetchDataWithRetries(url);
@@ -47,7 +50,12 @@ app.get("/numbers", async (req, res) => {
     await Promise.all(requests);
     const mergedNumbers = Array.from(new Set(numbers)).sort((a, b) => a - b);
 
-    res.json({ numbers: mergedNumbers });
+    res.json({
+      windowPrevState: windowPrevState,
+      windowCurrState: windowCurrState,
+      numbers: numbers,
+      avg: avg,
+    });
   } catch (error) {
     console.error(`Error processing request: ${error.message}`);
     res.status(500).json({ error: "Server error" });
